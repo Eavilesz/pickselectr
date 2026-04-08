@@ -14,7 +14,7 @@ export default function SelectionButton({
         disabled={selectedCount === 0}
         className="w-full bg-gray-800 text-white py-4 font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors"
       >
-        Save Selection
+        Save
       </button>
     </div>
   );
