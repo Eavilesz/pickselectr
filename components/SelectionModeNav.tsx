@@ -25,14 +25,14 @@ export default function SelectionModeNav({
     },
     {
       id: "album" as SelectionMode,
-      label: "Album",
+      label: "Álbum",
       color: "bg-slate-500",
       textColor: "text-slate-400",
       activeRing: "ring-slate-500",
     },
     {
       id: "cover" as SelectionMode,
-      label: "Cover",
+      label: "Portada",
       color: "bg-amber-700",
       textColor: "text-amber-600",
       activeRing: "ring-amber-700",

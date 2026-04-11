@@ -10,7 +10,7 @@ import SelectionModeNav, { SelectionMode } from "@/components/SelectionModeNav";
 const mockPhotos = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   url: `https://picsum.photos/seed/${i + 1}/800/800`,
-  alt: `Wedding photo ${i + 1}`,
+  alt: `Foto de boda ${i + 1}`,
 }));
 
 interface Photo {
@@ -140,9 +140,9 @@ export default function Home() {
       {/* Header */}
       <header className="px-6 pt-12 pb-6">
         <h1 className="text-4xl md:text-5xl font-serif text-white">
-          The Wedding of
+          La Boda de
           <br />
-          Sarah & James
+          María & Juan
         </h1>
       </header>
 
@@ -160,11 +160,11 @@ export default function Home() {
       {/* Info Message */}
       <div className="px-6 py-4">
         <p className="text-sm text-gray-400">
-          {currentMode === "digital" && "Select photos to send digitally"}
+          {currentMode === "digital" && "Selecciona fotos para enviar digitalmente"}
           {currentMode === "album" &&
-            "Select photos to include in the album (from Digital selection)"}
+            "Selecciona fotos para incluir en el álbum (de la selección Digital)"}
           {currentMode === "cover" &&
-            `Select ${COVER_LIMIT} photos for the album cover (from Album selection)`}
+            `Selecciona ${COVER_LIMIT} fotos para la portada del álbum (de la selección Álbum)`}
         </p>
       </div>
 
