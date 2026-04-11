@@ -10,7 +10,7 @@ import SelectionModeNav, { SelectionMode } from "@/components/SelectionModeNav";
 const mockPhotos = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   url: `https://picsum.photos/seed/${i + 1}/800/800`,
-  alt: `Wedding photo ${i + 1}`,
+  alt: `Foto de boda ${i + 1}`,
 }));
 
 interface Photo {
@@ -136,14 +136,18 @@ export default function Home() {
   const availablePhotos = getAvailablePhotos();
 
   return (
-    <div className="min-h-screen bg-black pb-24">
+    <div className="min-h-screen bg-black pb-36">
       {/* Header */}
-      <header className="px-6 pt-12 pb-6">
-        <h1 className="text-4xl md:text-5xl font-serif text-white">
-          The Wedding of
+      <header className="px-6 pt-14 pb-8">
+        <p className="text-[10px] tracking-[0.35em] text-white/35 uppercase mb-5">
+          Selección de fotos
+        </p>
+        <h1 className="text-5xl md:text-6xl font-serif font-normal text-white leading-[1.1]">
+          La Boda de
           <br />
-          Sarah & James
+          <em>María &amp; Juan</em>
         </h1>
+        <div className="mt-6 w-12 h-px bg-white/20" />
       </header>
 
       {/* Selection Mode Navigation */}
@@ -158,13 +162,14 @@ export default function Home() {
       />
 
       {/* Info Message */}
-      <div className="px-6 py-4">
-        <p className="text-sm text-gray-400">
-          {currentMode === "digital" && "Select photos to send digitally"}
+      <div className="px-6 py-3">
+        <p className="text-xs text-white/35 italic tracking-wide">
+          {currentMode === "digital" &&
+            "Selecciona las fotos que deseas recibir digitalmente"}
           {currentMode === "album" &&
-            "Select photos to include in the album (from Digital selection)"}
+            "De tu selección digital, elige las que irán en el álbum"}
           {currentMode === "cover" &&
-            `Select ${COVER_LIMIT} photos for the album cover (from Album selection)`}
+            `Elige ${COVER_LIMIT} fotos para la portada del álbum`}
         </p>
       </div>
 
