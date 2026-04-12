@@ -33,7 +33,7 @@ export default function AdminPage() {
         </div>
         <Link
           href="/admin/clients/new"
-          className="inline-flex items-center gap-2 bg-white text-neutral-900 text-xs tracking-[0.15em] uppercase px-4 py-2.5 hover:bg-neutral-200 transition-colors"
+          className="inline-flex items-center gap-2 bg-neutral-700 text-neutral-200 text-xs tracking-[0.15em] uppercase px-4 py-2.5 hover:bg-neutral-600 transition-colors"
         >
           <svg
             className="w-3.5 h-3.5"
