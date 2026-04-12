@@ -1,6 +1,9 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { mockClients } from "../../mock-data";
+import { getStoredProducts } from "../../store";
 import { EVENT_LABELS, PRODUCT_LABELS, ProductType } from "../../types";
 import { CopyButton } from "./CopyButton";
 
@@ -54,12 +57,9 @@ function ProgressBar({
   );
 }
 
-export default function ProductDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const client = mockClients.find((c) => c.slug === params.slug);
+export default function ProductDetailPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const client = getStoredProducts().find((c) => c.slug === slug);
   if (!client) notFound();
 
   const hasAlbum = client.products.some((p) => p.type === "album");
