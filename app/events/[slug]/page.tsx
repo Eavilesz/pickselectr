@@ -3,8 +3,8 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStoredProducts } from "../../store";
-import { EVENT_LABELS, PRODUCT_LABELS, ProductType } from "../../types";
+import { getStoredProducts } from "../store";
+import { EVENT_LABELS, PRODUCT_LABELS, ProductType } from "../types";
 import { CopyButton } from "./CopyButton";
 
 const PRODUCT_COLORS: Record<ProductType, string> = {

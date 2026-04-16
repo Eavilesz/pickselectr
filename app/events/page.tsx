@@ -9,7 +9,7 @@ import {
   updateStoredProduct,
 } from "./store";
 import { Client, EVENT_LABELS, PRODUCT_LABELS, ProductType } from "./types";
-import { CopyButton } from "./products/[slug]/CopyButton";
+import { CopyButton } from "./[slug]/CopyButton";
 
 const PRODUCT_COLORS: Record<ProductType, string> = {
   digital: "bg-white/10 text-neutral-300",
@@ -60,7 +60,7 @@ export default function AdminPage() {
           <h1 className="text-2xl font-medium text-white">Eventos</h1>
         </div>
         <Link
-          href="/events/events/new"
+          href="/events/new"
           className="inline-flex items-center gap-2 bg-neutral-700 text-neutral-200 text-xs tracking-[0.15em] uppercase px-4 py-2.5 hover:bg-neutral-600 transition-colors"
         >
           <svg
@@ -103,7 +103,7 @@ export default function AdminPage() {
               No hay eventos creados aún.
             </p>
             <Link
-              href="/events/products/new"
+              href="/events/new"
               className="mt-4 inline-block text-xs text-neutral-400 hover:text-white transition-colors underline underline-offset-4"
             >
               Crear el primero
@@ -152,7 +152,7 @@ export default function AdminPage() {
                   {/* Ver button */}
                   <td className="px-5 py-4 text-right">
                     <Link
-                      href={`/events/products/${client.slug}`}
+                      href={`/events/${client.slug}`}
                       className="text-xs text-neutral-500 group-hover:text-white transition-colors"
                     >
                       Ver →
