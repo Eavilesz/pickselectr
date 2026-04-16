@@ -62,7 +62,7 @@ export default function NewProductPage() {
       products.push({ type: "album", photoLimit: Number(albumLimit) });
 
     const slug = generateSlug();
-    addStoredProduct({
+    await addStoredProduct({
       id: slug,
       slug,
       name: clientName,

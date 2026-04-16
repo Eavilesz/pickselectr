@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { logout } from "./login/actions";
 
 export const metadata = {
   title: "Admin — Pickselectr",
@@ -26,6 +27,14 @@ export default function AdminLayout({
           >
             Eventos
           </Link>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="text-xs tracking-[0.15em] uppercase text-neutral-500 hover:text-white transition-colors"
+            >
+              Salir
+            </button>
+          </form>
         </nav>
       </header>
 
