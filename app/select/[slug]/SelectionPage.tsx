@@ -30,9 +30,12 @@ interface Photo {
 }
 
 export default function SelectionPage({ client }: { client: Client }) {
+  const albumOnly = client.photoLimit == null && client.albumLimit != null;
   const hasAlbum = client.albumLimit != null;
 
-  const [currentMode, setCurrentMode] = useState<SelectionMode>("digital");
+  const [currentMode, setCurrentMode] = useState<SelectionMode>(
+    albumOnly ? "album" : "digital",
+  );
   const [digitalPhotos, setDigitalPhotos] = useState<Set<number>>(new Set());
   const [albumPhotos, setAlbumPhotos] = useState<Set<number>>(new Set());
   const [coverPhotos, setCoverPhotos] = useState<Set<number>>(new Set());
@@ -83,7 +86,8 @@ export default function SelectionPage({ client }: { client: Client }) {
               return newCover;
             });
           } else {
-            if (digitalPhotos.has(id)) {
+            // album-only events can select from all photos; others need digital first
+            if (albumOnly || digitalPhotos.has(id)) {
               newSet.add(id);
             }
           }
@@ -128,7 +132,10 @@ export default function SelectionPage({ client }: { client: Client }) {
       case "digital":
         return mockPhotos;
       case "album":
-        return mockPhotos.filter((p) => digitalPhotos.has(p.id));
+        // album-only: all photos available; otherwise filtered by digital selection
+        return albumOnly
+          ? mockPhotos
+          : mockPhotos.filter((p) => digitalPhotos.has(p.id));
       case "cover":
         return mockPhotos.filter((p) => albumPhotos.has(p.id));
     }
@@ -152,14 +159,24 @@ export default function SelectionPage({ client }: { client: Client }) {
         <div className="mt-6 w-12 h-px bg-white/20" />
       </header>
 
-      {/* Selection Mode Navigation — only shown when album is included */}
-      {hasAlbum && (
+      {/* Selection Mode Navigation */}
+      {(hasAlbum || !albumOnly) && (
         <SelectionModeNav
           currentMode={currentMode}
           onModeChange={setCurrentMode}
+          modes={
+            albumOnly
+              ? ["album", "cover"]
+              : hasAlbum
+                ? undefined
+                : ["digital"]
+          }
           counts={{
             digital: { selected: digitalPhotos.size, total: mockPhotos.length },
-            album: { selected: albumPhotos.size, total: digitalPhotos.size },
+            album: {
+              selected: albumPhotos.size,
+              total: albumOnly ? mockPhotos.length : digitalPhotos.size,
+            },
             cover: { selected: coverPhotos.size, total: COVER_LIMIT },
           }}
         />
@@ -171,7 +188,9 @@ export default function SelectionPage({ client }: { client: Client }) {
           {currentMode === "digital" &&
             "Selecciona las fotos que deseas recibir digitalmente"}
           {currentMode === "album" &&
-            "De tu selección digital, elige las que irán en el álbum"}
+            (albumOnly
+              ? "Selecciona las fotos que irán en el álbum"
+              : "De tu selección digital, elige las que irán en el álbum")}
           {currentMode === "cover" &&
             `Elige ${COVER_LIMIT} fotos para la portada del álbum`}
         </p>

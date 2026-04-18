@@ -8,14 +8,16 @@ interface SelectionModeNavProps {
     album: { selected: number; total: number };
     cover: { selected: number; total: number };
   };
+  modes?: SelectionMode[];
 }
 
 export default function SelectionModeNav({
   currentMode,
   onModeChange,
   counts,
+  modes: allowedModes,
 }: SelectionModeNavProps) {
-  const modes = [
+  const allModes = [
     {
       id: "digital" as SelectionMode,
       label: "Digital",
@@ -35,6 +37,10 @@ export default function SelectionModeNav({
       activeLine: "bg-amber-400",
     },
   ];
+
+  const modes = allowedModes
+    ? allModes.filter((m) => allowedModes.includes(m.id))
+    : allModes;
 
   return (
     <div className="border-b border-white/10">

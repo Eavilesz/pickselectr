@@ -18,11 +18,12 @@ function generateSlug(): string {
 
 export default function NewProductPage() {
   const [eventType, setEventType] = useState<EventType>("wedding");
+  const [selectionMode, setSelectionMode] = useState<"digital" | "album" | "both">("digital");
   const [name1, setName1] = useState("");
   const [name2, setName2] = useState("");
   const [deadline, setDeadline] = useState("");
   const [photoLimit, setPhotoLimit] = useState<number | "">(50);
-  const [albumLimit, setAlbumLimit] = useState<number | "">("");
+  const [albumLimit, setAlbumLimit] = useState<number | "">(20);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,12 +36,16 @@ export default function NewProductPage() {
     const e: Record<string, string> = {};
     if (!clientName) e.name = "El nombre es requerido.";
     if (!deadline) e.deadline = "La fecha límite es requerida.";
-    if (!photoLimit || Number(photoLimit) < 1)
-      e.photoLimit = "Ingresa un límite válido.";
-    if (albumLimit !== "" && Number(albumLimit) < 1)
-      e.albumLimit = "Ingresa un límite válido.";
-    if (albumLimit !== "" && photoLimit !== "" && Number(albumLimit) >= Number(photoLimit))
-      e.albumLimit = `Debe ser menor que ${photoLimit} (fotos digitales).`;
+    if (selectionMode !== "album") {
+      if (!photoLimit || Number(photoLimit) < 1)
+        e.photoLimit = "Ingresa un límite válido.";
+    }
+    if (selectionMode !== "digital") {
+      if (!albumLimit || Number(albumLimit) < 1)
+        e.albumLimit = "Ingresa un límite válido.";
+      if (selectionMode === "both" && albumLimit !== "" && photoLimit !== "" && Number(albumLimit) >= Number(photoLimit))
+        e.albumLimit = `Debe ser menor que ${photoLimit} (fotos digitales).`;
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -58,8 +63,8 @@ export default function NewProductPage() {
         name: clientName,
         eventType,
         deadline: deadline || null,
-        photoLimit: Number(photoLimit),
-        albumLimit: albumLimit !== "" ? Number(albumLimit) : null,
+        photoLimit: selectionMode !== "album" ? Number(photoLimit) : null,
+        albumLimit: selectionMode !== "digital" ? Number(albumLimit) : null,
         isReady: false,
         selected: 0,
       });
@@ -157,6 +162,35 @@ export default function NewProductPage() {
           )}
         </div>
 
+        {/* Selection mode */}
+        <div>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
+            Tipo de selección
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                { value: "digital", label: "Solo digital" },
+                { value: "album", label: "Solo álbum" },
+                { value: "both", label: "Digital + álbum" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setSelectionMode(opt.value)}
+                className={`text-xs tracking-[0.15em] uppercase px-4 py-2 border transition-colors ${
+                  selectionMode === opt.value
+                    ? "border-white/40 bg-white/10 text-white"
+                    : "border-white/10 text-neutral-500 hover:border-white/20 hover:text-neutral-300"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Deadline */}
         <div>
           <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
@@ -175,53 +209,55 @@ export default function NewProductPage() {
         </div>
 
         {/* Photo limit */}
-        <div>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
-            Límite de fotos digitales
-          </p>
-          <input
-            type="number"
-            min={1}
-            value={photoLimit}
-            onChange={(e) =>
-              setPhotoLimit(
-                e.target.value === "" ? "" : Number(e.target.value),
-              )
-            }
-            className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-white/30 tabular-nums"
-          />
-          {errors.photoLimit && (
-            <p className="mt-1.5 text-xs text-rose-400">{errors.photoLimit}</p>
-          )}
-        </div>
-
-        {/* Album limit (optional) */}
-        <div>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-1">
-            Límite de fotos de álbum
-          </p>
-          <p className="text-xs text-neutral-600 mb-3">Opcional</p>
-          <input
-            type="number"
-            min={1}
-            value={albumLimit}
-            placeholder="—"
-            onChange={(e) =>
-              setAlbumLimit(
-                e.target.value === "" ? "" : Number(e.target.value),
-              )
-            }
-            className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-white/30 tabular-nums"
-          />
-          {photoLimit !== "" && (
-            <p className="mt-1.5 text-xs text-neutral-600">
-              Debe ser menor que {photoLimit}
+        {selectionMode !== "album" && (
+          <div>
+            <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
+              Límite de fotos digitales
             </p>
-          )}
-          {errors.albumLimit && (
-            <p className="mt-1.5 text-xs text-rose-400">{errors.albumLimit}</p>
-          )}
-        </div>
+            <input
+              type="number"
+              min={1}
+              value={photoLimit}
+              onChange={(e) =>
+                setPhotoLimit(
+                  e.target.value === "" ? "" : Number(e.target.value),
+                )
+              }
+              className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-white/30 tabular-nums"
+            />
+            {errors.photoLimit && (
+              <p className="mt-1.5 text-xs text-rose-400">{errors.photoLimit}</p>
+            )}
+          </div>
+        )}
+
+        {/* Album limit */}
+        {selectionMode !== "digital" && (
+          <div>
+            <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
+              Límite de fotos de álbum
+            </p>
+            <input
+              type="number"
+              min={1}
+              value={albumLimit}
+              onChange={(e) =>
+                setAlbumLimit(
+                  e.target.value === "" ? "" : Number(e.target.value),
+                )
+              }
+              className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-white/30 tabular-nums"
+            />
+            {selectionMode === "both" && photoLimit !== "" && (
+              <p className="mt-1.5 text-xs text-neutral-600">
+                Debe ser menor que {photoLimit}
+              </p>
+            )}
+            {errors.albumLimit && (
+              <p className="mt-1.5 text-xs text-rose-400">{errors.albumLimit}</p>
+            )}
+          </div>
+        )}
 
         {/* Submit */}
         <div className="pt-2 flex items-center gap-4">
