@@ -76,6 +76,19 @@ export async function addStoredProduct(product: Client): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export async function getEventBySlug(slug: string): Promise<Client | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return null;
+  return toClient(data as EventRow);
+}
+
 export async function updateStoredProduct(
   slug: string,
   updates: Partial<Client>,
@@ -87,9 +100,12 @@ export async function updateStoredProduct(
   if (updates.eventType !== undefined) dbUpdates.event_type = updates.eventType;
   if (updates.deadline !== undefined) dbUpdates.deadline = updates.deadline;
   if (updates.isReady !== undefined) dbUpdates.is_ready = updates.isReady;
-  if (updates.photoLimit !== undefined) dbUpdates.photo_limit = updates.photoLimit;
-  if (updates.albumLimit !== undefined) dbUpdates.album_limit = updates.albumLimit;
-  if (updates.selected !== undefined) dbUpdates.digital_selected = updates.selected;
+  if (updates.photoLimit !== undefined)
+    dbUpdates.photo_limit = updates.photoLimit;
+  if (updates.albumLimit !== undefined)
+    dbUpdates.album_limit = updates.albumLimit;
+  if (updates.selected !== undefined)
+    dbUpdates.digital_selected = updates.selected;
 
   const { error } = await supabase
     .from("events")
@@ -106,4 +122,3 @@ export async function deleteStoredProduct(slug: string): Promise<void> {
   const { error } = await supabase.from("events").delete().eq("slug", slug);
   if (error) throw new Error(error.message);
 }
-
