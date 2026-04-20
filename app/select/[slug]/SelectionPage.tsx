@@ -215,7 +215,7 @@ export default function SelectionPage({ client }: { client: Client }) {
       />
 
       {/* Save Button */}
-      <SelectionButton selectedCount={digitalPhotos.size} onSave={handleSave} />
+      <SelectionButton selectedCount={albumOnly ? albumPhotos.size : digitalPhotos.size} onSave={handleSave} />
 
       {/* Image Preview Modal */}
       <ImagePreview
