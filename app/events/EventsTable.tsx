@@ -150,7 +150,7 @@ export default function EventsTable({ products }: { products: Client[] }) {
                 ) : (
                   <button
                     onClick={() => setConfirmDelete(client.slug)}
-                    className="text-neutral-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                    className="text-neutral-600 hover:text-red-400 transition-all opacity-30 group-hover:opacity-100"
                     aria-label="Eliminar evento"
                   >
                     <svg
