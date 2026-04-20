@@ -139,6 +139,14 @@ export default async function ProductDetailPage({
               </p>
               <p className="text-neutral-200">{client.albumLimit ?? "—"}</p>
             </div>
+            <div>
+              <p className="text-[10px] tracking-[0.15em] uppercase text-neutral-500 mb-1">
+                PIN de acceso
+              </p>
+              <p className="text-neutral-200 tabular-nums tracking-widest">
+                {client.pin ?? "—"}
+              </p>
+            </div>
           </div>
 
           {/* Client URL */}
@@ -190,7 +198,6 @@ export default async function ProductDetailPage({
               </span>
             </span>
           </div>
-
         </div>
       </div>
     </div>

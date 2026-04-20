@@ -15,6 +15,7 @@ export interface Client {
   albumLimit: number | null;
   isReady: boolean;
   selected: number;
+  pin?: string;
 }
 
 export const EVENT_LABELS: Record<EventType, string> = {

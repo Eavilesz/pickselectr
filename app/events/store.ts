@@ -17,6 +17,7 @@ interface EventRow {
   photo_limit: number | null;
   album_limit: number | null;
   digital_selected: number;
+  pin: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -34,6 +35,7 @@ function toClient(event: EventRow): Client {
     photoLimit: event.photo_limit,
     albumLimit: event.album_limit,
     selected: event.digital_selected,
+    pin: event.pin ?? undefined,
   };
 }
 
@@ -70,6 +72,7 @@ export async function addStoredProduct(product: Client): Promise<void> {
     photo_limit: product.photoLimit,
     album_limit: product.albumLimit,
     digital_selected: product.selected,
+    pin: product.pin ?? null,
     created_by: user?.id,
   });
 
@@ -86,7 +89,27 @@ export async function getEventBySlug(slug: string): Promise<Client | null> {
     .single();
 
   if (error || !data) return null;
-  return toClient(data as EventRow);
+  // Strip pin — never expose it to client components
+  const { pin: _pin, ...client } = toClient(data as EventRow);
+  return client;
+}
+
+export async function verifyEventPin(
+  slug: string,
+  inputPin: string,
+): Promise<boolean> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("pin")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return false;
+  const storedPin = (data as { pin: string | null }).pin;
+  if (!storedPin) return false;
+  return storedPin === inputPin;
 }
 
 export async function updateStoredProduct(

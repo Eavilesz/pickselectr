@@ -18,12 +18,15 @@ function generateSlug(): string {
 
 export default function NewProductPage() {
   const [eventType, setEventType] = useState<EventType>("wedding");
-  const [selectionMode, setSelectionMode] = useState<"digital" | "album" | "both">("digital");
+  const [selectionMode, setSelectionMode] = useState<
+    "digital" | "album" | "both"
+  >("digital");
   const [name1, setName1] = useState("");
   const [name2, setName2] = useState("");
   const [deadline, setDeadline] = useState("");
   const [photoLimit, setPhotoLimit] = useState<number | "">(50);
   const [albumLimit, setAlbumLimit] = useState<number | "">(20);
+  const [pin, setPin] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -36,6 +39,7 @@ export default function NewProductPage() {
     const e: Record<string, string> = {};
     if (!clientName) e.name = "El nombre es requerido.";
     if (!deadline) e.deadline = "La fecha límite es requerida.";
+    if (!/^\d{4}$/.test(pin)) e.pin = "El PIN debe ser de 4 dígitos.";
     if (selectionMode !== "album") {
       if (!photoLimit || Number(photoLimit) < 1)
         e.photoLimit = "Ingresa un límite válido.";
@@ -43,7 +47,12 @@ export default function NewProductPage() {
     if (selectionMode !== "digital") {
       if (!albumLimit || Number(albumLimit) < 1)
         e.albumLimit = "Ingresa un límite válido.";
-      if (selectionMode === "both" && albumLimit !== "" && photoLimit !== "" && Number(albumLimit) >= Number(photoLimit))
+      if (
+        selectionMode === "both" &&
+        albumLimit !== "" &&
+        photoLimit !== "" &&
+        Number(albumLimit) >= Number(photoLimit)
+      )
         e.albumLimit = `Debe ser menor que ${photoLimit} (fotos digitales).`;
     }
     setErrors(e);
@@ -67,6 +76,7 @@ export default function NewProductPage() {
         albumLimit: selectionMode !== "digital" ? Number(albumLimit) : null,
         isReady: false,
         selected: 0,
+        pin,
       });
     } catch {
       setSubmitting(false);
@@ -226,7 +236,9 @@ export default function NewProductPage() {
               className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 focus:outline-none focus:border-white/30 tabular-nums"
             />
             {errors.photoLimit && (
-              <p className="mt-1.5 text-xs text-rose-400">{errors.photoLimit}</p>
+              <p className="mt-1.5 text-xs text-rose-400">
+                {errors.photoLimit}
+              </p>
             )}
           </div>
         )}
@@ -254,10 +266,36 @@ export default function NewProductPage() {
               </p>
             )}
             {errors.albumLimit && (
-              <p className="mt-1.5 text-xs text-rose-400">{errors.albumLimit}</p>
+              <p className="mt-1.5 text-xs text-rose-400">
+                {errors.albumLimit}
+              </p>
             )}
           </div>
         )}
+
+        {/* PIN */}
+        <div>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
+            PIN de acceso
+          </p>
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={4}
+            value={pin}
+            onChange={(e) =>
+              setPin(e.target.value.replace(/\D/g, "").slice(0, 4))
+            }
+            placeholder="4 dígitos"
+            className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-white/30 tabular-nums tracking-widest"
+          />
+          <p className="mt-1.5 text-xs text-neutral-600">
+            El cliente necesitará este PIN para acceder a su selección.
+          </p>
+          {errors.pin && (
+            <p className="mt-1.5 text-xs text-rose-400">{errors.pin}</p>
+          )}
+        </div>
 
         {/* Submit */}
         <div className="pt-2 flex items-center gap-4">

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getEventBySlug } from "@/app/events/store";
 import SelectionPage from "./SelectionPage";
+import PinGate from "@/components/PinGate";
 
 export default async function SelectPage({
   params,
@@ -11,5 +12,9 @@ export default async function SelectPage({
   const client = await getEventBySlug(slug);
   if (!client) notFound();
 
-  return <SelectionPage client={client} />;
+  return (
+    <PinGate slug={slug}>
+      <SelectionPage client={client} />
+    </PinGate>
+  );
 }
