@@ -28,6 +28,12 @@ export default function PinGate({
     () => localStorage.getItem(SESSION_KEY(slug)) === "1",
     () => false,
   );
+  // false on the server, true on the client — prevents PIN gate flash for authenticated users
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [attempts, setAttempts] = useState(0);
@@ -55,6 +61,7 @@ export default function PinGate({
     });
   }
 
+  if (!mounted) return null;
   if (verified) return <>{children}</>;
 
   const blocked = attempts >= MAX_ATTEMPTS;
