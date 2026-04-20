@@ -70,7 +70,9 @@ export default function SelectionPage({ client }: { client: Client }) {
               return newCover;
             });
           } else {
-            newSet.add(id);
+            if (client.photoLimit == null || newSet.size < client.photoLimit) {
+              newSet.add(id);
+            }
           }
           return newSet;
         });
@@ -88,7 +90,12 @@ export default function SelectionPage({ client }: { client: Client }) {
           } else {
             // album-only events can select from all photos; others need digital first
             if (albumOnly || digitalPhotos.has(id)) {
-              newSet.add(id);
+              if (
+                client.albumLimit == null ||
+                newSet.size < client.albumLimit
+              ) {
+                newSet.add(id);
+              }
             }
           }
           return newSet;
@@ -165,17 +172,18 @@ export default function SelectionPage({ client }: { client: Client }) {
           currentMode={currentMode}
           onModeChange={setCurrentMode}
           modes={
-            albumOnly
-              ? ["album", "cover"]
-              : hasAlbum
-                ? undefined
-                : ["digital"]
+            albumOnly ? ["album", "cover"] : hasAlbum ? undefined : ["digital"]
           }
           counts={{
-            digital: { selected: digitalPhotos.size, total: mockPhotos.length },
+            digital: {
+              selected: digitalPhotos.size,
+              total: client.photoLimit ?? mockPhotos.length,
+            },
             album: {
               selected: albumPhotos.size,
-              total: albumOnly ? mockPhotos.length : digitalPhotos.size,
+              total:
+                client.albumLimit ??
+                (albumOnly ? mockPhotos.length : digitalPhotos.size),
             },
             cover: { selected: coverPhotos.size, total: COVER_LIMIT },
           }}
