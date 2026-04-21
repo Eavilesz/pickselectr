@@ -7,7 +7,13 @@ import { deleteStoredProduct, updateStoredProduct } from "./store";
 import { Client, EVENT_LABELS } from "./types";
 import { CopyButton } from "./[slug]/CopyButton";
 
-export default function EventsTable({ products }: { products: Client[] }) {
+export default function EventsTable({
+  products,
+  photoCounts,
+}: {
+  products: Client[];
+  photoCounts: Record<string, number>;
+}) {
   const router = useRouter();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [, startTransition] = useTransition();
@@ -58,6 +64,9 @@ export default function EventsTable({ products }: { products: Client[] }) {
               Evento
             </th>
             <th className="text-left px-5 py-3 text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-medium">
+              Fotos
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-medium">
               Límite
             </th>
             <th className="text-left px-5 py-3 text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-medium">
@@ -96,6 +105,13 @@ export default function EventsTable({ products }: { products: Client[] }) {
               {/* Event type */}
               <td className="px-5 py-4 text-neutral-400">
                 {EVENT_LABELS[client.eventType]}
+              </td>
+
+              {/* Photo count */}
+              <td className="px-5 py-4 text-neutral-400 tabular-nums">
+                {photoCounts[client.slug] ?? (
+                  <span className="text-neutral-600">0</span>
+                )}
               </td>
 
               {/* Photo limit */}

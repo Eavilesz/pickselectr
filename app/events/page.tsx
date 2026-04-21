@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { getStoredProducts } from "./store";
+import { getPhotoCountsBySlug } from "@/lib/cloudinary";
 import EventsTable from "./EventsTable";
 
 export default async function AdminPage() {
-  const products = await getStoredProducts();
+  const [products, photoCounts] = await Promise.all([
+    getStoredProducts(),
+    getPhotoCountsBySlug().catch(() => ({} as Record<string, number>)),
+  ]);
 
   const ready = products.filter((c) => c.isReady).length;
   const inProgress = products.length - ready;
@@ -54,7 +58,7 @@ export default async function AdminPage() {
         ))}
       </div>
 
-      <EventsTable products={products} />
+      <EventsTable products={products} photoCounts={photoCounts} />
     </div>
   );
 }
