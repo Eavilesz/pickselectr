@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { deleteStoredProduct, updateStoredProduct } from "./store";
+import { deleteStoredProduct } from "./store";
 import { Client, EVENT_LABELS } from "./types";
 import { CopyButton } from "./[slug]/CopyButton";
 
@@ -22,13 +22,6 @@ export default function EventsTable({
     startTransition(async () => {
       await deleteStoredProduct(slug);
       setConfirmDelete(null);
-      router.refresh();
-    });
-  }
-
-  function handleToggleReady(slug: string, current: boolean) {
-    startTransition(async () => {
-      await updateStoredProduct(slug, { isReady: !current });
       router.refresh();
     });
   }
@@ -124,12 +117,9 @@ export default function EventsTable({
                 )}
               </td>
 
-              {/* Status — click to toggle */}
+              {/* Status — derived from database */}
               <td className="px-5 py-4">
-                <button
-                  onClick={() => handleToggleReady(client.slug, client.isReady)}
-                  className="inline-flex items-center gap-1.5 hover:opacity-75 transition-opacity"
-                >
+                <span className="inline-flex items-center gap-1.5">
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
                       client.isReady ? "bg-emerald-500" : "bg-amber-400"
@@ -142,7 +132,7 @@ export default function EventsTable({
                   >
                     {client.isReady ? "Listo" : "En progreso"}
                   </span>
-                </button>
+                </span>
               </td>
 
               {/* Delete */}

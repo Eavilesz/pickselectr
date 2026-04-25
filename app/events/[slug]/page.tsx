@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStoredProducts } from "../store";
+import { getStoredProducts, getSelections } from "../store";
 import { EVENT_LABELS } from "../types";
 import { CopyButton } from "./CopyButton";
 
@@ -48,7 +48,10 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const products = await getStoredProducts();
+  const [products, selections] = await Promise.all([
+    getStoredProducts(),
+    getSelections(slug),
+  ]);
   const client = products.find((c) => c.slug === slug);
   if (!client) notFound();
 
@@ -169,17 +172,31 @@ export default async function ProductDetailPage({
             Progreso
           </p>
           <div className="space-y-5">
-            <ProgressBar
-              label="Fotos seleccionadas"
-              selected={client.selected}
-              total={client.photoLimit ?? 0}
-            />
-            {client.albumLimit != null && (
+            {client.photoLimit != null && (
               <ProgressBar
-                label="Álbum"
-                selected={0}
-                total={client.albumLimit}
+                label="Fotos seleccionadas"
+                selected={selections.digital.length}
+                total={client.photoLimit}
               />
+            )}
+            {client.albumLimit != null && (
+              <>
+                <ProgressBar
+                  label="Álbum"
+                  selected={selections.album.length}
+                  total={client.albumLimit}
+                />
+                <ProgressBar
+                  label="Portada"
+                  selected={selections.cover.length}
+                  total={2}
+                />
+              </>
+            )}
+            {client.photoLimit == null && client.albumLimit == null && (
+              <p className="text-xs text-neutral-600 italic">
+                Sin límites configurados
+              </p>
             )}
           </div>
           <div className="mt-6 pt-5 border-t border-white/10">

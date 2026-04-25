@@ -7,6 +7,7 @@ import ImagePreview from "@/components/ImagePreview";
 import SelectionModeNav, { SelectionMode } from "@/components/SelectionModeNav";
 import { Client, EventType } from "@/app/events/types";
 import { Photo } from "@/lib/r2";
+import { saveSelections, Selections } from "@/app/events/store";
 
 const EVENT_TITLE_LABELS: Record<EventType, string> = {
   wedding: "La Boda de",
@@ -25,9 +26,11 @@ type LocalPhoto = Photo;
 export default function SelectionPage({
   client,
   photos,
+  savedSelections,
 }: {
   client: Client;
   photos: LocalPhoto[];
+  savedSelections: Selections;
 }) {
   const albumOnly = client.photoLimit == null && client.albumLimit != null;
   const hasAlbum = client.albumLimit != null;
@@ -35,11 +38,19 @@ export default function SelectionPage({
   const [currentMode, setCurrentMode] = useState<SelectionMode>(
     albumOnly ? "album" : "digital",
   );
-  const [digitalPhotos, setDigitalPhotos] = useState<Set<string>>(new Set());
-  const [albumPhotos, setAlbumPhotos] = useState<Set<string>>(new Set());
-  const [coverPhotos, setCoverPhotos] = useState<Set<string>>(new Set());
+  const [digitalPhotos, setDigitalPhotos] = useState<Set<string>>(
+    () => new Set(savedSelections.digital),
+  );
+  const [albumPhotos, setAlbumPhotos] = useState<Set<string>>(
+    () => new Set(savedSelections.album),
+  );
+  const [coverPhotos, setCoverPhotos] = useState<Set<string>>(
+    () => new Set(savedSelections.cover),
+  );
   const [previewPhoto, setPreviewPhoto] = useState<LocalPhoto | null>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_BATCH);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const handleModeChange = useCallback((mode: SelectionMode) => {
@@ -148,10 +159,20 @@ export default function SelectionPage({
     return null;
   };
 
-  const handleSave = () => {
-    console.log("Digital photos:", Array.from(digitalPhotos));
-    console.log("Album photos:", Array.from(albumPhotos));
-    console.log("Cover photos:", Array.from(coverPhotos));
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSavedOk(false);
+    try {
+      await saveSelections(
+        client.slug,
+        Array.from(digitalPhotos),
+        Array.from(albumPhotos),
+        Array.from(coverPhotos),
+      );
+      setSavedOk(true);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const currentSelection = getCurrentSelection();
@@ -254,6 +275,8 @@ export default function SelectionPage({
       <SelectionButton
         selectedCount={albumOnly ? albumPhotos.size : digitalPhotos.size}
         onSave={handleSave}
+        isSaving={isSaving}
+        savedOk={savedOk}
       />
 
       {/* Image Preview Modal */}
