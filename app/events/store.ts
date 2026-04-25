@@ -157,6 +157,7 @@ export interface Selections {
   digital: string[];
   album: string[];
   cover: string[];
+  workedOn: string[];
 }
 
 export async function getSelections(slug: string): Promise<Selections> {
@@ -164,18 +165,22 @@ export async function getSelections(slug: string): Promise<Selections> {
 
   const { data } = await supabase
     .from("selections")
-    .select("digital, album, cover")
+    .select("digital, album, cover, worked_on")
     .eq("event_slug", slug)
     .single();
 
-  if (!data) return { digital: [], album: [], cover: [] };
+  if (!data) return { digital: [], album: [], cover: [], workedOn: [] };
+  const row = data as {
+    digital: string[];
+    album: string[];
+    cover: string[];
+    worked_on: string[];
+  };
   return {
-    digital: (data as { digital: string[]; album: string[]; cover: string[] })
-      .digital,
-    album: (data as { digital: string[]; album: string[]; cover: string[] })
-      .album,
-    cover: (data as { digital: string[]; album: string[]; cover: string[] })
-      .cover,
+    digital: row.digital,
+    album: row.album,
+    cover: row.cover,
+    workedOn: row.worked_on ?? [],
   };
 }
 
@@ -210,6 +215,7 @@ export async function saveSelections(
   if (error) throw new Error(error.message);
 
   // Compute isReady: all applicable slots must be filled
+  // (worked_on is preserved via onConflict — only digital/album/cover are updated)
   const ev = event as {
     photo_limit: number | null;
     album_limit: number | null;
@@ -228,4 +234,24 @@ export async function saveSelections(
     .from("events")
     .update({ digital_selected: digital.length, is_ready: isReady })
     .eq("slug", slug);
+}
+
+export async function saveWorkedOn(
+  slug: string,
+  workedOn: string[],
+): Promise<void> {
+  const supabase = await createClient();
+
+  // Update if row exists; insert (with empty selections) if it doesn't yet
+  const { data } = await supabase
+    .from("selections")
+    .update({ worked_on: workedOn, updated_at: new Date().toISOString() })
+    .eq("event_slug", slug)
+    .select("event_slug");
+
+  if (!data || data.length === 0) {
+    await supabase
+      .from("selections")
+      .insert({ event_slug: slug, worked_on: workedOn });
+  }
 }
