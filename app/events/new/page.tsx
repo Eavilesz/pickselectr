@@ -26,7 +26,9 @@ export default function NewProductPage() {
   const [deadline, setDeadline] = useState("");
   const [photoLimit, setPhotoLimit] = useState<number | "">(50);
   const [albumLimit, setAlbumLimit] = useState<number | "">(20);
-  const [pin, setPin] = useState("");
+  const [pin] = useState<string>(() =>
+    String(Math.floor(1000 + Math.random() * 9000)),
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -42,7 +44,8 @@ export default function NewProductPage() {
     const e: Record<string, string> = {};
     if (!clientName) e.name = "El nombre es requerido.";
     if (!deadline) e.deadline = "La fecha límite es requerida.";
-    if (!/^\d{4}$/.test(pin)) e.pin = "El PIN debe ser de 4 dígitos.";
+    if (selectedFiles.length === 0)
+      e.files = "Debes agregar al menos una foto.";
     if (selectionMode !== "album") {
       if (!photoLimit || Number(photoLimit) < 1)
         e.photoLimit = "Ingresa un límite válido.";
@@ -327,23 +330,13 @@ export default function NewProductPage() {
           <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
             PIN de acceso
           </p>
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={4}
-            value={pin}
-            onChange={(e) =>
-              setPin(e.target.value.replace(/\D/g, "").slice(0, 4))
-            }
-            placeholder="4 dígitos"
-            className="w-28 bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-white/30 tabular-nums tracking-widest"
-          />
-          <p className="mt-1.5 text-xs text-neutral-600">
-            El cliente necesitará este PIN para acceder a su selección.
+          <p className="text-2xl font-light text-white tabular-nums tracking-widest">
+            {pin}
           </p>
-          {errors.pin && (
-            <p className="mt-1.5 text-xs text-rose-400">{errors.pin}</p>
-          )}
+          <p className="mt-1.5 text-xs text-neutral-600">
+            Generado automáticamente. El cliente necesitará este PIN para
+            acceder.
+          </p>
         </div>
 
         {/* Photo upload */}
@@ -368,9 +361,12 @@ export default function NewProductPage() {
           />
           <p className="mt-2 text-xs text-neutral-600">
             {selectedFiles.length === 0
-              ? "Sin fotos — puedes agregarlas después"
+              ? "Sin fotos seleccionadas"
               : `${selectedFiles.length} foto${selectedFiles.length !== 1 ? "s" : ""} seleccionada${selectedFiles.length !== 1 ? "s" : ""}`}
           </p>
+          {errors.files && (
+            <p className="mt-1.5 text-xs text-rose-400">{errors.files}</p>
+          )}
         </div>
 
         {/* Submit */}

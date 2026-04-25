@@ -126,7 +126,7 @@ export default function ImagePreview({
         </div>
 
         {/* Image Container */}
-        <div className="flex-1 relative flex items-center justify-center p-4">
+        <div className="flex-1 min-h-0 flex items-center justify-center p-4 overflow-hidden">
           <div className="relative w-full h-full max-w-6xl flex items-center justify-center">
             <img
               src={photo.originalUrl}
