@@ -18,6 +18,8 @@ interface ImagePreviewProps {
   onToggle: () => void;
   currentMode: SelectionMode;
   selectionType: "digital" | "album" | "cover" | null;
+  onNext?: () => void;
+  onPrev?: () => void;
 }
 
 export default function ImagePreview({
@@ -27,6 +29,8 @@ export default function ImagePreview({
   onToggle,
   currentMode,
   selectionType,
+  onNext,
+  onPrev,
 }: ImagePreviewProps) {
   const [loadedPhotoId, setLoadedPhotoId] = useState<string | null>(null);
 
@@ -45,6 +49,17 @@ export default function ImagePreview({
       document.body.style.overflow = "unset";
     };
   }, [photo]);
+
+  useEffect(() => {
+    if (!photo) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") onNext?.();
+      else if (e.key === "ArrowLeft") onPrev?.();
+      else if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [photo, onNext, onPrev, onClose]);
 
   if (!photo) return null;
 
@@ -128,11 +143,53 @@ export default function ImagePreview({
         {/* Image Container */}
         <div className="flex-1 min-h-0 flex items-center justify-center p-4 overflow-hidden">
           <div className="relative w-full h-full max-w-6xl flex items-center justify-center">
+            {onPrev && (
+              <button
+                onClick={onPrev}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white transition-all"
+                aria-label="Foto anterior"
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 19.5L8.25 12l7.5-7.5"
+                  />
+                </svg>
+              </button>
+            )}
             <img
               src={photo.originalUrl}
               alt={photo.alt}
               className="max-h-full max-w-full object-contain"
             />
+            {onNext && (
+              <button
+                onClick={onNext}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white transition-all"
+                aria-label="Siguiente foto"
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </div>

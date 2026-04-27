@@ -331,6 +331,24 @@ export default function SelectionPage({
         onToggle={() => previewPhoto && togglePhoto(previewPhoto.id)}
         currentMode={currentMode}
         selectionType={previewPhoto ? getSelectionType(previewPhoto.id) : null}
+        onPrev={(() => {
+          if (!previewPhoto) return undefined;
+          const idx = availablePhotos.findIndex(
+            (p) => p.id === previewPhoto.id,
+          );
+          return idx > 0
+            ? () => setPreviewPhoto(availablePhotos[idx - 1])
+            : undefined;
+        })()}
+        onNext={(() => {
+          if (!previewPhoto) return undefined;
+          const idx = availablePhotos.findIndex(
+            (p) => p.id === previewPhoto.id,
+          );
+          return idx < availablePhotos.length - 1
+            ? () => setPreviewPhoto(availablePhotos[idx + 1])
+            : undefined;
+        })()}
       />
     </div>
   );
