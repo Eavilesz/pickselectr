@@ -195,6 +195,17 @@ export default function SelectionPage({
   const visiblePhotos = availablePhotos.slice(0, visibleCount);
   const titleLabel = EVENT_TITLE_LABELS[client.eventType];
 
+  const daysLeft = (() => {
+    if (!client.deadline) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadline = new Date(client.deadline + "T00:00:00");
+    const diff = Math.round(
+      (deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return diff;
+  })();
+
   return (
     <div className="min-h-screen bg-black pb-36">
       {/* Header */}
@@ -209,6 +220,32 @@ export default function SelectionPage({
         </h1>
         <div className="mt-6 w-12 h-px bg-white/20" />
       </header>
+
+      {/* Deadline Warning */}
+      {daysLeft !== null && daysLeft >= 0 && daysLeft <= 5 && (
+        <div className="mx-6 mb-2  px-4 py-3 flex items-start gap-3">
+          <svg
+            className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+            />
+          </svg>
+          <p className="text-xs text-amber-500/80 leading-relaxed">
+            {daysLeft === 0
+              ? "Hoy es el último día para seleccionar tus fotos."
+              : daysLeft === 1
+                ? "Queda 1 día para seleccionar tus fotos."
+                : `Quedan ${daysLeft} días para seleccionar tus fotos.`}
+          </p>
+        </div>
+      )}
 
       {/* Selection Mode Navigation */}
       {(hasAlbum || !albumOnly) && (
