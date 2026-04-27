@@ -1,15 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Photo } from "@/lib/r2";
 
 export type SelectionMode = "digital" | "album" | "cover";
-
-interface Photo {
-  id: string;
-  originalUrl: string;
-  thumbnailUrl: string;
-  alt: string;
-}
 
 interface ImagePreviewProps {
   photo: Photo | null;

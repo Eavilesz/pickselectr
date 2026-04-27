@@ -1,11 +1,6 @@
-export type SelectionMode = "digital" | "album" | "cover";
+import { Photo } from "@/lib/r2";
 
-interface Photo {
-  id: string;
-  originalUrl: string;
-  thumbnailUrl: string;
-  alt: string;
-}
+export type SelectionMode = "digital" | "album" | "cover";
 
 interface PhotoCardProps {
   photo: Photo;

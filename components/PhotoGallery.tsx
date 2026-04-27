@@ -1,11 +1,5 @@
 import PhotoCard, { SelectionMode } from "./PhotoCard";
-
-interface Photo {
-  id: string;
-  originalUrl: string;
-  thumbnailUrl: string;
-  alt: string;
-}
+import { Photo } from "@/lib/r2";
 
 interface PhotoGalleryProps {
   photos: Photo[];

@@ -42,11 +42,13 @@ export default function SelectedPhotosSection({
 
   if (allSelectedIds.length === 0) return null;
 
-  const tiers: Array<{ key: TierKey; ids: string[] }> = [
-    { key: "digital", ids: selections.digital },
-    { key: "album", ids: selections.album },
-    { key: "cover", ids: selections.cover },
-  ].filter(({ ids }) => ids.length > 0);
+  const tiers: Array<{ key: TierKey; ids: string[] }> = (
+    [
+      { key: "digital", ids: selections.digital },
+      { key: "album", ids: selections.album },
+      { key: "cover", ids: selections.cover },
+    ] as Array<{ key: TierKey; ids: string[] }>
+  ).filter(({ ids }) => ids.length > 0);
 
   const toggleCollapsed = (key: TierKey) =>
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
