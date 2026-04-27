@@ -53,6 +53,11 @@ export default function SelectionPage({
   const [savedOk, setSavedOk] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  // Reset "saved" state when the user changes their selection
+  useEffect(() => {
+    setSavedOk(false);
+  }, [digitalPhotos, albumPhotos, coverPhotos]);
+
   const handleModeChange = useCallback((mode: SelectionMode) => {
     setCurrentMode(mode);
     setVisibleCount(INITIAL_BATCH);
