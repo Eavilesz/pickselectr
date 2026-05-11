@@ -156,6 +156,7 @@ export async function updateStoredProduct(
     dbUpdates.album_limit = updates.albumLimit;
   if (updates.selected !== undefined)
     dbUpdates.digital_selected = updates.selected;
+  if (updates.pin !== undefined) dbUpdates.pin = updates.pin;
 
   const { error } = await supabase
     .from("events")
