@@ -13,8 +13,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "María & Juan — Selección de Fotos",
-  description: "Selecciona tus fotos favoritas de la boda",
+  title: "Picselectr — Selección de Fotos",
+  description: "Selecciona tus fotos favoritas",
 };
 
 export default function RootLayout({

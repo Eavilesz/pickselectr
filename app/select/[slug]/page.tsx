@@ -1,8 +1,23 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getEventBySlug, getSelections } from "@/app/events/store";
 import { getPhotosBySlug } from "@/lib/r2";
 import SelectionPage from "./SelectionPage";
 import PinGate from "@/components/PinGate";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const client = await getEventBySlug(slug);
+  if (!client) return {};
+  return {
+    title: `${client.name} — Selección de Fotos`,
+    description: `Selecciona tus fotos favoritas`,
+  };
+}
 
 export default async function SelectPage({
   params,
