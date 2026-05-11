@@ -9,6 +9,7 @@ const EVENT_OPTIONS: { value: EventType; label: string }[] = [
   { value: "quinceañera", label: "Quinceañera" },
   { value: "birthday", label: "Cumpleaños" },
   { value: "photobooth", label: "Sesión de fotos" },
+  { value: "other", label: "Otro" },
 ];
 
 function deriveNames(name: string, eventType: EventType) {
@@ -41,6 +42,9 @@ export default function EditForm({ client }: { client: Client }) {
   const [albumLimit, setAlbumLimit] = useState<number | "">(
     client.albumLimit ?? "",
   );
+  const [customEventLabel, setCustomEventLabel] = useState(
+    client.customEventLabel ?? "",
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -53,6 +57,8 @@ export default function EditForm({ client }: { client: Client }) {
     const e: Record<string, string> = {};
     if (!clientName) e.name = "El nombre es requerido.";
     if (!deadline) e.deadline = "La fecha límite es requerida.";
+    if (eventType === "other" && !customEventLabel.trim())
+      e.customEventLabel = "Escribe el nombre del evento.";
     if (selectionMode !== "album") {
       if (!photoLimit || Number(photoLimit) < 1)
         e.photoLimit = "Ingresa un límite válido.";
@@ -84,6 +90,8 @@ export default function EditForm({ client }: { client: Client }) {
         deadline: deadline || null,
         photoLimit: selectionMode !== "album" ? Number(photoLimit) : null,
         albumLimit: selectionMode !== "digital" ? Number(albumLimit) : null,
+        customEventLabel:
+          eventType === "other" ? customEventLabel.trim() : null,
       });
     } catch (err) {
       setSubmitting(false);
@@ -122,6 +130,22 @@ export default function EditForm({ client }: { client: Client }) {
             </button>
           ))}
         </div>
+        {eventType === "other" && (
+          <div className="mt-3">
+            <input
+              type="text"
+              value={customEventLabel}
+              onChange={(e) => setCustomEventLabel(e.target.value)}
+              placeholder="Ej: El bautizo, La graduación..."
+              className="w-full bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-white/30"
+            />
+            {errors.customEventLabel && (
+              <p className="mt-1.5 text-xs text-rose-400">
+                {errors.customEventLabel}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Client name */}

@@ -10,6 +10,7 @@ const EVENT_OPTIONS: { value: EventType; label: string }[] = [
   { value: "quinceañera", label: "Quinceañera" },
   { value: "birthday", label: "Cumpleaños" },
   { value: "photobooth", label: "Sesión de fotos" },
+  { value: "other", label: "Otro" },
 ];
 
 function generateSlug(): string {
@@ -29,6 +30,7 @@ export default function NewProductPage() {
   const [pin] = useState<string>(() =>
     String(Math.floor(1000 + Math.random() * 9000)),
   );
+  const [customEventLabel, setCustomEventLabel] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -44,6 +46,8 @@ export default function NewProductPage() {
     const e: Record<string, string> = {};
     if (!clientName) e.name = "El nombre es requerido.";
     if (!deadline) e.deadline = "La fecha límite es requerida.";
+    if (eventType === "other" && !customEventLabel.trim())
+      e.customEventLabel = "Escribe el nombre del evento.";
     if (selectedFiles.length === 0)
       e.files = "Debes agregar al menos una foto.";
     if (selectionMode !== "album") {
@@ -120,6 +124,8 @@ export default function NewProductPage() {
         isReady: false,
         selected: 0,
         pin,
+        customEventLabel:
+          eventType === "other" ? customEventLabel.trim() : null,
       });
       if (selectedFiles.length > 0) {
         await uploadFilesToR2(slug);
@@ -185,9 +191,23 @@ export default function NewProductPage() {
               </button>
             ))}
           </div>
+          {eventType === "other" && (
+            <div className="mt-3">
+              <input
+                type="text"
+                value={customEventLabel}
+                onChange={(e) => setCustomEventLabel(e.target.value)}
+                placeholder="Ej: El bautizo, La graduación..."
+                className="w-full bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-white/30"
+              />
+              {errors.customEventLabel && (
+                <p className="mt-1.5 text-xs text-rose-400">
+                  {errors.customEventLabel}
+                </p>
+              )}
+            </div>
+          )}
         </div>
-
-        {/* Client name */}
         <div>
           <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
             {eventType === "wedding" ? "Nombres" : "Nombre del cliente"}

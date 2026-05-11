@@ -97,7 +97,7 @@ export default function EventsTable({
 
               {/* Event type */}
               <td className="px-5 py-4 text-neutral-400">
-                {EVENT_LABELS[client.eventType]}
+                {client.customEventLabel ?? EVENT_LABELS[client.eventType]}
               </td>
 
               {/* Photo count */}

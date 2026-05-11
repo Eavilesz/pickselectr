@@ -17,6 +17,7 @@ export interface Client {
   selected: number;
   pin?: string;
   studioName?: string | null;
+  customEventLabel?: string | null;
 }
 
 export const EVENT_LABELS: Record<EventType, string> = {

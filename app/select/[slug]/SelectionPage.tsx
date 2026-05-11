@@ -198,7 +198,10 @@ export default function SelectionPage({
 
   const availablePhotos = getAvailablePhotos();
   const visiblePhotos = availablePhotos.slice(0, visibleCount);
-  const titleLabel = EVENT_TITLE_LABELS[client.eventType];
+  const titleLabel =
+    client.eventType === "other" && client.customEventLabel
+      ? client.customEventLabel + " de"
+      : EVENT_TITLE_LABELS[client.eventType];
 
   const daysLeft = (() => {
     if (!client.deadline) return null;

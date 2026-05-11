@@ -22,6 +22,7 @@ interface EventRow {
   pin: string | null;
   created_by: string | null;
   studio_name: string | null;
+  custom_event_label: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -41,6 +42,7 @@ function toClient(event: EventRow): Client {
     selected: event.digital_selected,
     pin: event.pin ?? undefined,
     studioName: event.studio_name ?? null,
+    customEventLabel: event.custom_event_label ?? null,
   };
 }
 
@@ -83,6 +85,7 @@ export async function addStoredProduct(product: Client): Promise<void> {
     pin: product.pin ?? null,
     created_by: user?.id,
     studio_name: studioName,
+    custom_event_label: product.customEventLabel ?? null,
   });
 
   if (error) throw new Error(error.message);
@@ -157,6 +160,8 @@ export async function updateStoredProduct(
   if (updates.selected !== undefined)
     dbUpdates.digital_selected = updates.selected;
   if (updates.pin !== undefined) dbUpdates.pin = updates.pin;
+  if (updates.customEventLabel !== undefined)
+    dbUpdates.custom_event_label = updates.customEventLabel;
 
   const { error } = await supabase
     .from("events")

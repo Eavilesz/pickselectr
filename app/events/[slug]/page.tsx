@@ -90,7 +90,8 @@ export default async function ProductDetailPage({
       <div className="flex items-start justify-between mb-8">
         <div>
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-500 mb-1">
-            {client.name} · {EVENT_LABELS[client.eventType]}
+            {client.name} ·{" "}
+            {client.customEventLabel ?? EVENT_LABELS[client.eventType]}
           </p>
           <h1 className="text-2xl font-medium text-white">Evento</h1>
         </div>
@@ -140,7 +141,7 @@ export default async function ProductDetailPage({
                 Tipo de evento
               </p>
               <p className="text-neutral-200">
-                {EVENT_LABELS[client.eventType]}
+                {client.customEventLabel ?? EVENT_LABELS[client.eventType]}
               </p>
             </div>
             <div>
