@@ -69,123 +69,121 @@ export default function ImagePreview({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95" onClick={onClose}>
+      {/* Full-screen image area with controls overlaid */}
       <div
-        className="h-full flex flex-col"
+        className="relative h-full flex items-center justify-center p-12"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header with controls */}
-        <div className="flex items-center justify-between p-4 shrink-0">
-          {/* Heart Icon for Selection */}
-          <button
-            onClick={handleToggle}
-            className="p-2 hover:bg-white/10 transition-colors"
-            aria-label={isSelected ? "Unselect photo" : "Select photo"}
-          >
-            {isSelected ? (
-              <svg
-                className={`w-8 h-8 ${currentColor.heart} drop-shadow-lg`}
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            ) : (
-              <svg
-                className={`w-8 h-8 ${currentColor.heart} drop-shadow-lg`}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            )}
-          </button>
-
-          {/* Selection Type Indicator */}
-          {selectionType && (
-            <div className="flex items-center gap-2 px-3 py-1.5 border border-white/10">
-              <div className={`w-1.5 h-1.5 rounded-full ${displayColor.bg}`} />
-              <span className="text-xs tracking-[0.2em] text-white/50 uppercase">
-                {selectionType === "digital"
-                  ? "Digital"
-                  : selectionType === "album"
-                    ? "Álbum"
-                    : "Portada"}
-              </span>
-            </div>
+        {/* Heart Icon — top-left corner */}
+        <button
+          onClick={handleToggle}
+          className="absolute top-3 left-3 z-20 p-2 bg-black/50 hover:bg-black/80 transition-colors"
+          aria-label={isSelected ? "Unselect photo" : "Select photo"}
+        >
+          {isSelected ? (
+            <svg
+              className={`w-7 h-7 ${currentColor.heart} drop-shadow-lg`}
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          ) : (
+            <svg
+              className={`w-7 h-7 ${currentColor.heart} drop-shadow-lg`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
           )}
+        </button>
 
-          {/* Close Button */}
+        {/* Selection Type Indicator — top-center */}
+        {selectionType && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 bg-black/50 border border-white/10">
+            <div className={`w-1.5 h-1.5 rounded-full ${displayColor.bg}`} />
+            <span className="text-xs tracking-[0.2em] text-white/50 uppercase">
+              {selectionType === "digital"
+                ? "Digital"
+                : selectionType === "album"
+                  ? "Álbum"
+                  : "Portada"}
+            </span>
+          </div>
+        )}
+
+        {/* Close Button — top-right corner */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-20 p-2 bg-black/50 hover:bg-black/80 text-white hover:text-gray-300 transition-colors"
+          aria-label="Close preview"
+        >
+          <svg
+            className="w-7 h-7"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Prev arrow */}
+        {onPrev && (
           <button
-            onClick={onClose}
-            className="text-white hover:text-gray-300 transition-colors"
-            aria-label="Close preview"
+            onClick={onPrev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white transition-all"
+            aria-label="Foto anterior"
           >
             <svg
               className="w-8 h-8"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.5"
               viewBox="0 0 24 24"
             >
-              <path d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
             </svg>
           </button>
-        </div>
+        )}
 
-        {/* Image Container */}
-        <div className="flex-1 min-h-0 flex items-center justify-center p-4 overflow-hidden">
-          <div className="relative w-full h-full max-w-6xl flex items-center justify-center">
-            {onPrev && (
-              <button
-                onClick={onPrev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white transition-all"
-                aria-label="Foto anterior"
-              >
-                <svg
-                  className="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 19.5L8.25 12l7.5-7.5"
-                  />
-                </svg>
-              </button>
-            )}
-            <img
-              src={photo.originalUrl}
-              alt={photo.alt}
-              className="max-h-full max-w-full object-contain"
-            />
-            {onNext && (
-              <button
-                onClick={onNext}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white transition-all"
-                aria-label="Siguiente foto"
-              >
-                <svg
-                  className="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
+        <img
+          src={photo.originalUrl}
+          alt={photo.alt}
+          className="max-h-full max-w-full object-contain"
+          onClick={(e) => e.stopPropagation()}
+        />
+
+        {/* Next arrow */}
+        {onNext && (
+          <button
+            onClick={onNext}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 bg-black/50 hover:bg-black/80 text-white/70 hover:text-white transition-all"
+            aria-label="Siguiente foto"
+          >
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   );
