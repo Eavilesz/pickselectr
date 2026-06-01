@@ -28,7 +28,9 @@ export default function NewProductPage() {
   const [photoLimit, setPhotoLimit] = useState<number | "">(50);
   const [albumLimit, setAlbumLimit] = useState<number | "">(20);
   const [pin] = useState<string>(() =>
-    String(Math.floor(1000 + Math.random() * 9000)),
+    typeof window === "undefined"
+      ? ""
+      : String(Math.floor(1000 + Math.random() * 9000)),
   );
   const [customEventLabel, setCustomEventLabel] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -107,7 +109,7 @@ export default function NewProductPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!validate()) return;
+    if (!pin || !validate()) return;
 
     const slug = generateSlug();
     setSubmitting(true);
@@ -350,8 +352,11 @@ export default function NewProductPage() {
           <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mb-3">
             PIN de acceso
           </p>
-          <p className="text-2xl font-light text-white tabular-nums tracking-widest">
-            {pin}
+          <p
+            suppressHydrationWarning
+            className="text-2xl font-light text-white tabular-nums tracking-widest"
+          >
+            {pin || "····"}
           </p>
           <p className="mt-1.5 text-xs text-neutral-600">
             Generado automáticamente. El cliente necesitará este PIN para

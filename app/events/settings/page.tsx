@@ -1,10 +1,10 @@
-import { getStudioName } from "@/app/events/store";
+import { getSettings } from "@/app/events/store";
 import SettingsForm from "./SettingsForm";
 
 export const metadata = { title: "Configuración — Picselectr" };
 
 export default async function SettingsPage() {
-  const studioName = await getStudioName();
+  const { studioName } = await getSettings();
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-10">

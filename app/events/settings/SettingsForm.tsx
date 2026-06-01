@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateStudioName } from "@/app/events/store";
+import { updateSettings } from "@/app/events/store";
 
 export default function SettingsForm({
   initialStudioName,
@@ -19,13 +19,15 @@ export default function SettingsForm({
     setError(null);
     startTransition(async () => {
       try {
-        await updateStudioName(studioName);
+        await updateSettings({ studioName });
         setSaved(true);
       } catch {
         setError("No se pudo guardar. Intenta de nuevo.");
       }
     });
   };
+
+  const markChanged = () => setSaved(false);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
@@ -42,7 +44,7 @@ export default function SettingsForm({
           value={studioName}
           onChange={(e) => {
             setStudioName(e.target.value);
-            setSaved(false);
+            markChanged();
           }}
           placeholder="Estudio Foto XYZ"
           className="w-full bg-neutral-900 border border-white/10 px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-white/30 transition-colors"

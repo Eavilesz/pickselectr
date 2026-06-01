@@ -3,6 +3,8 @@ import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
 import { uploadToR2 } from "@/lib/r2";
 
+sharp.cache(false);
+
 export const maxDuration = 60;
 
 // Increase body size limit to 50 MB for large photo uploads
