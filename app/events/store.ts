@@ -124,6 +124,31 @@ export async function updateStudioName(studioName: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export async function getSettings(): Promise<{
+  studioName: string | null;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return {
+    studioName:
+      (user?.user_metadata?.studio_name as string | undefined) ?? null,
+  };
+}
+
+export async function updateSettings(settings: {
+  studioName: string;
+}): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      studio_name: settings.studioName.trim() || null,
+    },
+  });
+  if (error) throw new Error(error.message);
+}
+
 export async function verifyEventPin(
   slug: string,
   inputPin: string,
@@ -226,10 +251,10 @@ export async function saveSelections(
 ): Promise<void> {
   const supabase = createServiceClient();
 
-  // Fetch event limits to determine readiness
+  // Fetch event limits, previous ready state, and owner to determine readiness and notify
   const { data: event } = await supabase
     .from("events")
-    .select("photo_limit, album_limit")
+    .select("photo_limit, album_limit, is_ready, created_by, name")
     .eq("slug", slug)
     .single();
 
@@ -251,6 +276,9 @@ export async function saveSelections(
   const ev = event as {
     photo_limit: number | null;
     album_limit: number | null;
+    is_ready: boolean;
+    created_by: string | null;
+    name: string;
   } | null;
   let isReady = true;
   if (ev?.photo_limit != null)
@@ -266,6 +294,17 @@ export async function saveSelections(
     .from("events")
     .update({ digital_selected: digital.length, is_ready: isReady })
     .eq("slug", slug);
+
+  // Send email notification only when transitioning to ready for the first time
+  if (isReady && ev?.is_ready === false && ev.created_by) {
+    const { data: userData } = await supabase.auth.admin.getUserById(
+      ev.created_by,
+    );
+    const to = userData?.user?.email;
+    if (to) {
+      await sendEmailNotification(to, ev.name);
+    }
+  }
 }
 
 export async function saveWorkedOn(
@@ -285,5 +324,39 @@ export async function saveWorkedOn(
     await supabase
       .from("selections")
       .insert({ event_slug: slug, worked_on: workedOn });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Email notifications (Resend — free tier, plain fetch, no SDK needed)
+// ---------------------------------------------------------------------------
+
+async function sendEmailNotification(
+  to: string,
+  clientName: string,
+): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const from =
+    process.env.RESEND_FROM_EMAIL ?? "Picselectr <onboarding@resend.dev>";
+
+  // Fire-and-forget — notification failure must never break the client save
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject: `${clientName} completó su selección de fotos`,
+        text: `¡${clientName} ha completado su selección de fotos! Entra a Picselectr para verla.`,
+      }),
+    });
+  } catch {
+    // Silently ignore network errors
   }
 }
